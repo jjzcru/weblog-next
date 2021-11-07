@@ -22,26 +22,26 @@ interface Comment {
 	parent?: number;
 	createdAt?: string | Date;
 	updatedAt?: string | Date;
-} 
+}
 
 interface AddPost {
-    categoryId: string 
-    userId: string
-    title: string 
-    description: string 
-    content: string 
+	categoryId: string;
+	userId: string;
+	title: string;
+	description: string;
+	content: string;
 }
 
 interface UpdatePost {
-    id: string;
+	id: string;
 	userId: string;
-    title: string;
-    description: string;
-    content: string;
+	title: string;
+	description: string;
+	content: string;
 }
 
 interface DeletePost {
-    id: string;
+	id: string;
 	userId: string;
 }
 
@@ -103,7 +103,7 @@ function mapDataComment(row: any): Comment {
 	};
 }
 
-// Posts 
+// Posts
 
 const rowsQuery = `p.id, p.category_id, c."name" as category_name, 
 p.user_id, u.name as user_name, u.picture as user_picture,
@@ -160,12 +160,12 @@ export async function addPost(post: AddPost): Promise<string> {
         "description", content)
 	VALUES ($1, $2, $3, $4, $5) RETURNING id;`;
 	let { rows } = await runQuery(query, [
-        post.categoryId,
-        post.userId,
-        post.title,
-        post.description,
-        post.content
-    ]);
+		post.categoryId,
+		post.userId,
+		post.title,
+		post.description,
+		post.content,
+	]);
 	return rows[0].id;
 }
 
@@ -174,10 +174,10 @@ export async function updatePost(post: UpdatePost): Promise<string> {
     content = $3 WHERE id = $4 AND user_id = $5 RETURNING id;`;
 	let { rows } = await runQuery(query, [
 		post.title,
-        post.description,
-        post.content,
-        post.id,
-        post.userId
+		post.description,
+		post.content,
+		post.id,
+		post.userId,
 	]);
 	return rows.length ? rows[0].id : null;
 }
@@ -188,7 +188,6 @@ export async function deletePost(post: DeletePost): Promise<string> {
 	let { rows } = await runQuery(query, [post.id, post.userId]);
 	return rows.length ? rows[0].id : null;
 }
-
 
 // Comments
 
@@ -204,10 +203,10 @@ export async function getComments(postId: string): Promise<Array<Comment>> {
 	return rows.map(mapDataComment);
 }
 export async function addComment(comment: AddComment): Promise<string> {
-    if(!comment.postId) {
-        throw new Error('Invalid value for postId')
-    }
-    console.log(`COMMENT`, comment);
+	if (!comment.postId) {
+		throw new Error('Invalid value for postId');
+	}
+	console.log(`COMMENT`, comment);
 	const values = [comment.postId, comment.userId, comment.content];
 	let query = `INSERT INTO post_comment (post_id, user_id, content)
 	VALUES ($1, $2, $3) RETURNING id;`;
@@ -217,11 +216,11 @@ export async function addComment(comment: AddComment): Promise<string> {
 		values.push(comment.parent);
 	}
 
-    const post = await getPostById(comment.postId);
-    console.log(`POSt`, post);
-    if(!post) {
-        throw new Error('Post do not exist');
-    }
+	const post = await getPostById(comment.postId);
+	console.log(`POSt`, post);
+	if (!post) {
+		throw new Error('Post do not exist');
+	}
 
 	let { rows } = await runQuery(query, values);
 	return rows[0].id;
@@ -244,5 +243,3 @@ export async function deleteComment(comment: DeleteComment): Promise<string> {
 	let { rows } = await runQuery(query, [comment.id, comment.userId]);
 	return rows.length ? rows[0].id : null;
 }
-
-

@@ -1,4 +1,4 @@
-var pg = require("pg");
+var pg = require('pg');
 
 let client: any;
 const config = {
@@ -9,8 +9,8 @@ const config = {
 	port: 26257,
 	ssl: {
 		rejectUnauthorized: false,
-    	ca: process.env.DB_CERTIFICATE,
-	}
+		ca: process.env.DB_CERTIFICATE,
+	},
 };
 export async function getClient() {
 	if (client) {
@@ -20,36 +20,38 @@ export async function getClient() {
 	return new Promise((resolve, reject) => {
 		const pool = new pg.Pool(config);
 		pool.connect((err, c, done) => {
-			if(err) {
+			if (err) {
 				reject(err);
 				return;
 			}
 
 			c.done = done;
 			client = c;
-			resolve(client)
-		})
-	})
+			resolve(client);
+		});
+	});
 }
 
-export async function runQuery(query: string, values: Array<any> = []): Promise<{rows}> {
+export async function runQuery(
+	query: string,
+	values: Array<any> = []
+): Promise<{ rows }> {
 	return new Promise(async (resolve, reject) => {
 		try {
 			const c = await getClient();
 			c.query(query, values, (err, res) => {
 				try {
-					if(err) {
+					if (err) {
 						reject(err);
 						return;
 					}
 					resolve(res);
-				} catch(e) {
+				} catch (e) {
 					reject(e);
 				}
 			});
-		} catch(e) {
+		} catch (e) {
 			reject(e);
 		}
-	})
+	});
 }
-

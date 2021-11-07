@@ -9,12 +9,12 @@ export interface Category {
 
 function mapData(row: any): Category {
 	const createdAt = row.created_at ? new Date(row.created_at) : null;
-    const updatedAt = row.updated_at ? new Date(row.updated_at) : null;
+	const updatedAt = row.updated_at ? new Date(row.updated_at) : null;
 	return {
 		id: row.id,
 		name: row.name,
 		createdAt,
-        updatedAt
+		updatedAt,
 	};
 }
 
