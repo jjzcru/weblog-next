@@ -140,8 +140,23 @@ export async function getPostById(id: string): Promise<Post> {
 	return post;
 }
 
+export async function getPostByUser(userId: string): Promise<Array<Post>> {
+	const query = `SELECT ${rowsQuery} FROM post p 
+	LEFT JOIN category c ON (p.category_id = c.id)
+	LEFT JOIN app_user u ON (p.user_id = u.id)
+    WHERE p.user_id = $1;`;
+	let { rows } = await runQuery(query, [userId]);
+	const posts: Array<Post> = rows.map(mapDataPost);
+	const response: Array<Post> = [];
+	for (const post of posts) {
+		post.comments = await getComments(post.id);
+		response.push(post);
+	}
+	return response;
+}
+
 export async function addPost(post: AddPost): Promise<string> {
-	let query = `INSERT INTO post_comment (category_id, user_id, title, 
+	let query = `INSERT INTO post (category_id, user_id, title, 
         "description", content)
 	VALUES ($1, $2, $3, $4, $5) RETURNING id;`;
 	let { rows } = await runQuery(query, [
@@ -155,7 +170,7 @@ export async function addPost(post: AddPost): Promise<string> {
 }
 
 export async function updatePost(post: UpdatePost): Promise<string> {
-	let query = `UPDATE post_comment SET title = $1, "description" = $2, 
+	let query = `UPDATE post SET title = $1, "description" = $2, 
     content = $3 WHERE id = $4 AND user_id = $5 RETURNING id;`;
 	let { rows } = await runQuery(query, [
 		post.title,
@@ -189,6 +204,10 @@ export async function getComments(postId: string): Promise<Array<Comment>> {
 	return rows.map(mapDataComment);
 }
 export async function addComment(comment: AddComment): Promise<string> {
+    if(!comment.postId) {
+        throw new Error('Invalid value for postId')
+    }
+    console.log(`COMMENT`, comment);
 	const values = [comment.postId, comment.userId, comment.content];
 	let query = `INSERT INTO post_comment (post_id, user_id, content)
 	VALUES ($1, $2, $3) RETURNING id;`;
@@ -197,6 +216,13 @@ export async function addComment(comment: AddComment): Promise<string> {
 	    VALUES ($1, $2, $3, $4) RETURNING id;`;
 		values.push(comment.parent);
 	}
+
+    const post = await getPostById(comment.postId);
+    console.log(`POSt`, post);
+    if(!post) {
+        throw new Error('Post do not exist');
+    }
+
 	let { rows } = await runQuery(query, values);
 	return rows[0].id;
 }
