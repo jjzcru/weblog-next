@@ -25,7 +25,7 @@ export async function authenticate(
 	email: string,
 	password: string
 ): Promise<User> {
-	const query = `SELECT * FROM app_user where email = $1 and hash_password = sha512('${password}') LIMIT 1;`;
+	const query = `SELECT * FROM app_user where email = $1 and password = sha512('${password}') LIMIT 1;`;
 	let { rows } = await runQuery(query, [email]);
 	if (!rows.length) {
 		return null;
