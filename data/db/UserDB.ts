@@ -3,21 +3,21 @@ import { runQuery } from './db';
 export interface User {
 	id: string;
 	email?: string;
-    picture?: string;
-    name?: string;
+	picture?: string;
+	name?: string;
 	createdAt?: string | Date;
 	updatedAt?: string | Date;
 }
 
 function mapData(row: any): User {
 	const createdAt = row.created_at ? new Date(row.created_at) : null;
-    const updatedAt = row.updated_at ? new Date(row.updated_at) : null;
+	const updatedAt = row.updated_at ? new Date(row.updated_at) : null;
 	return {
 		id: row.id,
 		email: row.email,
-        name: row.name,
+		name: row.name,
 		createdAt,
-        updatedAt
+		updatedAt,
 	};
 }
 
@@ -32,7 +32,6 @@ export async function authenticate(
 	}
 	return rows.map(mapData)[0];
 }
-
 
 export async function getUserById(id: string): Promise<Array<User>> {
 	const query = `SELECT * FROM app_user where id = $1;`;
