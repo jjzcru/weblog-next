@@ -16,6 +16,7 @@ function mapData(row: any): User {
 		id: row.id,
 		email: row.email,
 		name: row.name,
+		picture: row.picture,
 		createdAt,
 		updatedAt,
 	};
@@ -35,7 +36,7 @@ export async function authenticate(
 
 export async function getUserById(id: string): Promise<Array<User>> {
 	const query = `SELECT * FROM app_user where id = $1;`;
-	let { rows } = await runQuery(query);
+	let { rows } = await runQuery(query, [id]);
 	return rows.map(mapData);
 }
 

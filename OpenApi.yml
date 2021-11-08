@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: WeBlog
   description: WeBlog back-end specification
-  version: 1.0.0
+  version: 1.0.1
 servers:
   - url: https://weblog-next.vercel.app/api
     description: Stable development
@@ -137,6 +137,29 @@ paths:
                     type: string
                   status:
                     type: string
+  /me:
+    get:
+      security:
+        - bearerAuth: []
+      summary: Return the token holder information
+      responses:
+        '401':
+          description: 'Missing authorization header'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error_missing_header'
+        '200': 
+          description: Return the user of the token
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  status:
+                    type: string
+                  me: 
+                    $ref: '#/components/schemas/user'
   /categories:
     get:
       security:
