@@ -34,10 +34,29 @@ export async function authenticate(
 	return rows.map(mapData)[0];
 }
 
+export async function signUp(params: SignUpParams): Promise<User> {
+	const { name, email, password } = params;
+	const query = `INSERT INTO app_user (email, name, password) VALUES ($1, $2, sha512('${password}'));`;
+	await runQuery(query, [email, name]);
+	return getUserByEmail(email);
+}
+
+interface SignUpParams {
+	name: string;
+	email: string;
+	password: string;
+}
+
 export async function getUserById(id: string): Promise<Array<User>> {
 	const query = `SELECT * FROM app_user where id = $1;`;
 	let { rows } = await runQuery(query, [id]);
 	return rows.map(mapData);
+}
+
+export async function getUserByEmail(email: string): Promise<User> {
+	const query = `SELECT * FROM app_user where email = $1 LIMIT 1;`;
+	let { rows } = await runQuery(query, [email]);
+	return rows.length ? rows.map(mapData)[0] : null;
 }
 
 export async function getCategory(id: string): Promise<User> {
