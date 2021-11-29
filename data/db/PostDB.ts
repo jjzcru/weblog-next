@@ -192,7 +192,7 @@ export async function deletePost(post: DeletePost): Promise<string> {
 // Comments
 
 export async function getComments(postId: string): Promise<Array<Comment>> {
-	const query = `SELECT pc.id, pc.post_id, p.user_id, u.name as user_name,
+	const query = `SELECT pc.id, pc.post_id, pc.user_id, u.name as user_name,
 	u.picture as user_picture, pc."content", pc.parent,
 	pc.created_at, pc.updated_at
 	FROM post_comment pc 
