@@ -1,8 +1,8 @@
 import { signUp, getUserByEmail } from '../../data/db/UserDB';
-import { getTokenData } from '../../data/services/auth';
 import { cors, runMiddleware } from '../../middleware/cors';
 
 export default async function handler(req, res) {
+	await runMiddleware(req, res, cors);
 	switch (req.method) {
 		case 'POST':
 			await signUpReq(req, res);
